@@ -131,7 +131,7 @@ const generateMinigames = (socket, tug, session) => {
   const emit = (tag, ...args) => socket.emit(tag, session.id, ...args);
   // Automatically import all minigame JS file outputs, extract client logic.
   const minigames = extractImportFileMap(
-    ({"clickPic":require("..\\..\\minigames\\clickPic.js"),"dance":require("..\\..\\minigames\\dance.js"),"eatMan":require("..\\..\\minigames\\eatMan.js"),"hiveMind":require("..\\..\\minigames\\hiveMind.js"),"roboPirate":require("..\\..\\minigames\\roboPirate.js"),"spacebar":require("..\\..\\minigames\\spacebar.js"),"teekey":require("..\\..\\minigames\\teekey.js"),"typing":require("..\\..\\minigames\\typing.js")}),
+    ({"clickPic":require("..\\..\\minigames\\clickPic.js"),"dance":require("..\\..\\minigames\\dance.js"),"eatMan":require("..\\..\\minigames\\eatMan.js"),"hiveMind":require("..\\..\\minigames\\hiveMind.js"),"spacebar":require("..\\..\\minigames\\spacebar.js"),"teekey":require("..\\..\\minigames\\teekey.js"),"typing":require("..\\..\\minigames\\typing.js")}),
     (minigame) => (new minigame.client(session, emit, tug)).enforceInterface()
   );
 
@@ -170,7 +170,7 @@ const generateMinigames = (socket, tug, session) => {
 
 module.exports = generateMinigames;
 
-},{"..\\..\\minigames\\clickPic.js":8,"..\\..\\minigames\\dance.js":9,"..\\..\\minigames\\eatMan.js":10,"..\\..\\minigames\\hiveMind.js":11,"..\\..\\minigames\\roboPirate.js":12,"..\\..\\minigames\\spacebar.js":13,"..\\..\\minigames\\teekey.js":14,"..\\..\\minigames\\typing.js":15}],4:[function(require,module,exports){
+},{"..\\..\\minigames\\clickPic.js":7,"..\\..\\minigames\\dance.js":8,"..\\..\\minigames\\eatMan.js":9,"..\\..\\minigames\\hiveMind.js":10,"..\\..\\minigames\\spacebar.js":12,"..\\..\\minigames\\teekey.js":13,"..\\..\\minigames\\typing.js":14}],4:[function(require,module,exports){
 //const io = require('socket.io-client');
 const createSession = require('./createSession.js');
 const generateMinigames = require('./generateMinigames.js');
@@ -222,60 +222,6 @@ const ClientSideMinigame = function() {
 module.exports = ClientSideMinigame;
 
 },{}],6:[function(require,module,exports){
-
-const timer = function(totalMs, increments) {
-
-  const sectionWidth = 5; // px
-  const increment = totalMs / increments;
-  const sections = [];
-  let lock = 0;
-  let parent = $(`<div class="timer-container"></div>`);
-  this.root = parent;
-
-
-  for (let i = 0; i < increments; i ++) {
-    // const section = $(`<div class="timer" id="timer-${i}"></div>`);
-    const section = $(`<div class="timer"></div>`);
-    const size = (increments - i) * sectionWidth * 2;
-    sections.push(section);
-
-    section.css({
-      'width': size,
-      'height': size,
-      'border-radius': size / 2,
-    });
-
-    parent.append(section);
-    parent = section;
-  }
-
-  this.countdown = (lock, startTimeMs, i) => {
-    if (this.lock != lock) return;
-    const elapsed = new Date().getTime() - startTimeMs;
-    sections[i-1].css({ 'background-color': 'transparent' });
-
-    if (i >= increments) return;
-    const nextInverval =
-      startTimeMs + ((i + 1) * increment) - new Date().getTime();
-    setTimeout(() => this.countdown(lock, startTimeMs, i + 1), nextInverval);
-  }
-
-  this.reset = () => {
-    lock ++;
-    for (const section in sections) {
-      sections[section].css({ 'background-color': 'Grey' });
-    }
-  }
-
-  this.appendTo = (element) => {
-    element.append(this.root);
-  }
-
-}
-
-module.exports = { timer };
-
-},{}],7:[function(require,module,exports){
 const ServerSideMinigame = function(emit) {
   this.name = null;
   this.socketResponseMap = {};
@@ -284,6 +230,11 @@ const ServerSideMinigame = function(emit) {
     console.log(
       `Kicking off minigame with default (empty) socket emission: ${this.name}`);
     emit(this.name);
+  };
+
+  this.cleanup = () => {
+    console.log(
+      `No cleanup actions to take for minigame: ${this.name}`);
   };
 
   this.enforceInterface = () => {
@@ -300,7 +251,7 @@ const ServerSideMinigame = function(emit) {
 
 module.exports = ServerSideMinigame;
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 const ClientSideMinigame = require("./base/client.js");
 const ServerSideMinigame = require("./base/server.js");
 
@@ -356,7 +307,7 @@ const server = function(emit) {
 
 module.exports = { client, server };
 
-},{"./base/client.js":5,"./base/server.js":7}],9:[function(require,module,exports){
+},{"./base/client.js":5,"./base/server.js":6}],8:[function(require,module,exports){
 const ClientSideMinigame = require("./base/client.js");
 const ServerSideMinigame = require("./base/server.js");
 
@@ -366,7 +317,7 @@ const client = function(session, emit, tug) {
   ClientSideMinigame.call(this);
 
   this.name = name;
-  this.instructions = "Just DANCE!!";
+  this.instructions = "DANCE!!!";
 
   this.begin = () => {
     console.log(`Starting minigame: ${this.name}`)
@@ -390,7 +341,7 @@ const server = function(emit) {
 
 module.exports = { client, server };
 
-},{"./base/client.js":5,"./base/server.js":7}],10:[function(require,module,exports){
+},{"./base/client.js":5,"./base/server.js":6}],9:[function(require,module,exports){
 const ClientSideMinigame = require("./base/client.js");
 const ServerSideMinigame = require("./base/server.js");
 
@@ -502,110 +453,240 @@ const server = function(emit) {
 
 module.exports = { client, server };
 
-},{"./base/client.js":5,"./base/server.js":7}],11:[function(require,module,exports){
+},{"./base/client.js":5,"./base/server.js":6}],10:[function(require,module,exports){
 const ClientSideMinigame = require("./base/client.js");
 const ServerSideMinigame = require("./base/server.js");
-const timer =  require("./base/misc.js").timer;
+const timer =  require("./misc/timer.js").rundownTimer;
 
+/**
+ * As timer runs down, all users choose a side (left or right).
+ * Those who are in the majority get a point! Then the game repeats.
+ * 
+ * Server .. starts timeout for total time for client to everything (show results, accept choice, and send over)
+ * Server -> hiveMind, lock img-l (left choice), img-r (right choice), prev-majority (0 first time / on tie, then + or - num)
+ * Client .. some time to post results of last round, highlights in winner/loser color and (on win) tugs
+ * Client .. Resets game, using new left and right choice imgs, new timer
+ * Client .. Waits until response timer hits 0, tracks current choice
+ * Client -> hiveMind, lock, choice (0 for no choice, -1 or 1 for left/right)
+ * Server .. recieves choices, calculates majority
+ * [REPEAT]
+ */
 const name = "hiveMind";
-const backgroundOptions = [
+const HIVE_CHOICE_TAG = "hiveChoice"
+const IMG_COUNT = 10
+const RESULT_TIMEOUT_MS = 1000;
+const RESPONSE_TIMEOUT_MS = 2000;
+const PROCESSING_TIMEOUT_MS = 500;
+const CYCLE_TIME_MS = RESULT_TIMEOUT_MS + RESPONSE_TIMEOUT_MS + PROCESSING_TIMEOUT_MS;
 
-];
+const ACTIVE_COLOR = 'purple'
 
-// const hiveDiv = $('<div id="hive"></div>');
-// const hiveLeft = $('<div id="hive-left"></div>');
-// const hiveRight = $('<div id="hive-right"></div>');
-// const timer =
+// Generate array that contains all rorschach blob relative paths
+const array_01_to_10 = Array.from(
+  {length:IMG_COUNT},
+  (v,k)=>(k+1).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false})
+);
+const backgroundOptionUrls = array_01_to_10.map((i) => `../client/img/Rorschach_blot_${i}.jpg`);
 
 const client = function(session, emit, tug) {
   ClientSideMinigame.call(this);
 
   this.name = name;
-  this.instructions = "Tap into the Hivemind.";
-  this.timer = new timer(2000, 16);
+  this.instructions = "Tap into the Hivemind. Left - or Right?";
+  this.timer = new timer(RESPONSE_TIMEOUT_MS, 16, ACTIVE_COLOR);
+  this.choice = 0;
+  this.locked_choice = 0;
 
-  this.begin = () => {
+  this.begin = (lock, leftImageId, rightImageId, result) => {
+    const container = this.generateGameBoard();
+    this.timer.appendTo(container.children('.hive-center').first())
+
+    this.choice = 0;
+    this.timer.countdown(this.timer.lock, new Date().getTime(), 1);
+    console.log(`Starting minigame: ${this.name}`)
+    this.showResults(lock, leftImageId, rightImageId, result);
+  }
+
+  this.inputEventResponseMap.keyup = (event) => {
+    if (event.keyCode === 37) this.choice = -1;
+    if (event.keyCode === 39) this.choice = 1;
+  };
+
+  this.generateGameBoard = () => {
+    const container = $(`<div class="hive-container"></div>`);
+
     const left = $(`<div class="hive-left"></div>`);
     const right = $(`<div class="hive-right"></div>`);
     const center = $(`<div class="hive-center"></div>`);
-    const container = $(`<div class="hive-container"></div>`);
-    const leftOption = $(`<div class="hive-option"></div>`);
-    const rightOption = $(`<div class="hive-option"></div>`);
-    const input = $(`<div class="input-timer-container"></div>`);
-    const leftArrow = $(`<div class="arrow-icon arrow-icon-left"></div>`);
-    const rightArrow = $(`<div class="arrow-icon arrow-icon-right"></div>`);
-    const leftArrowContainer = $(`<div></div>`);
-    const rightArrowContainer = $(`<div></div>`);
-    leftArrowContainer.css({
-      "position": "absolute",
-      "top": "50%",
-      "left": "5px",
-      "transform": "translate(0%, -50%)",
-    })
-    rightArrowContainer.css({
-      "position": "absolute",
-      "top": "50%",
-      "right": "5px",
-      "transform": "translate(0%, -50%)",
-    })
-
-    //const xxx = $(`<div id="xxx"></div>`);
-
-    session.$gameboard.append(container);
     container.append(left);
     container.append(right);
     container.append(center);
+
+    const leftOption = $(`<div class="hive-option"></div>`);
+    const rightOption = $(`<div class="hive-option"></div>`);
     left.append(leftOption);
     right.append(rightOption);
-    //center.append(input);
-    this.timer.appendTo(center);
-    center.append(input);
-    input.append(leftArrowContainer);
-    input.append(rightArrowContainer);
-    leftArrowContainer.append(leftArrow);
-    rightArrowContainer.append(rightArrow);
-    //center.append(x);
 
+    session.$gameboard.append(container);
+    return container;
+  }
 
+  this.showResults = (lock, leftImageId, rightImageId, result) => {
+    inMajority = result * this.locked_choice > 0;
+    console.log(`Was in majority? ${inMajority}`)
+    // TODO: locked choice becomes color based on majority or not
+    if (inMajority) tug();
 
-    this.timer.countdown(this.timer.lock, new Date().getTime(), 1);
-    console.log(`Starting minigame: ${this.name}`)
+    setTimeout(() => this.startResponsePhase(lock, leftImageId, rightImageId), RESULT_TIMEOUT_MS);
+  }
+
+  this.startResponsePhase = (lock, leftImageId, rightImageId) =>  {
+    // TODO: start timer
+    setTimeout(() => this.sendResponse(lock), RESPONSE_TIMEOUT_MS);
+  }
+
+  this.sendResponse = (lock) =>  {
+    this.locked_choice = this.choice;
+    console.log(this.locked_choice, this.choice, lock)
+    // TODO: Fade everything else
+    emit(HIVE_CHOICE_TAG, lock, this.locked_choice);
   }
 }
 
 const server = function(emit) {
   ServerSideMinigame.call(this, emit);
   this.name = name;
+  this.voteDifference = 0;
+  this.lock = 0; // increments each time game is started/ended, so lingering processing can stop
+
+  this.cleanup =() => {
+    console.log(`Minigame lock is no longer active: ${this.name}`);
+    this.lock++;
+  }
+
+  this.initiate = () => {
+    this.reset();
+    this.lock++;
+    this.cycleHivemind(this.lock);
+  }
+
+  this.reset = () => {
+    this.voteDifference = 0
+  }
+
+  this.chooseImageIds = () => {
+    // Choose left image index first
+    const leftImageId = Math.floor(Math.random() * IMG_COUNT);
+    // Then choose right image index from remaining ones
+    let rightImageId = Math.floor(Math.random() * (IMG_COUNT-1));
+    if (rightImageId >= leftImageId) rightImageId++
+    return [leftImageId, rightImageId]
+  }
+
+  this.cycleHivemind = (lock) => {
+    console.log(lock, this.lock)
+    if (lock < this.lock) return;
+    console.log(`Another round of minigame: ${this.name}`)
+    const [leftImageId, rightImageId] = this.chooseImageIds();
+    console.log(`Emitting: minigame ${this.name} with images ${leftImageId} & ${rightImageId} and previous vote diff ${this.voteDifference}`)
+    emit(this.name, lock, leftImageId, rightImageId, this.voteDifference);
+    this.reset();
+    setTimeout(() => this.cycleHivemind(lock), CYCLE_TIME_MS);
+  }
+
+  this.socketResponseMap[HIVE_CHOICE_TAG] = (lock, direction) => {
+    if (lock == this.lock) this.voteDifference += direction;
+  };
 };
 
 module.exports = { client, server };
 
-},{"./base/client.js":5,"./base/misc.js":6,"./base/server.js":7}],12:[function(require,module,exports){
-const ClientSideMinigame = require("./base/client.js");
-const ServerSideMinigame = require("./base/server.js");
+},{"./base/client.js":5,"./base/server.js":6,"./misc/timer.js":11}],11:[function(require,module,exports){
+const timer = function(totalMs, increments, sectionGenerator, color) {
 
-const name = "roboPirate";
+  const increment = totalMs / increments;
+  const parent = $(`<div></div>`);
+  let lock = 0;
+  this.root = parent;
 
-const client = function(session, emit, tug) {
-  ClientSideMinigame.call(this);
+  const sections = sectionGenerator(increments, parent, color);
 
-  this.name = name;
-  this.instructions =
-    `They sent RoboPirate from the past and future to destroy the present. Guide her to your team's treasure!`;
+  this.countdown = (lock, startTimeMs, i) => {
+    if (this.lock != lock) return;
+    const elapsed = new Date().getTime() - startTimeMs;
+    sections[i-1].css({ 'background-color': 'transparent' });
 
-  this.begin = () => {
-    console.log(`Starting minigame: ${this.name}`)
+    console.log("hello")
+
+    if (i >= increments) return;
+    const nextInverval =
+      startTimeMs + ((i + 1) * increment) - new Date().getTime();
+    setTimeout(() => this.countdown(lock, startTimeMs, i + 1), nextInverval);
   }
+
+  this.reset = () => {
+    lock ++;
+    for (const section in sections) {
+      sections[section].css({ 'background-color': color });
+    }
+  }
+
+  this.appendTo = (element) => {
+    element.append(this.root);
+  }
+
 }
 
-const server = function(emit) {
-  ServerSideMinigame.call(this, emit);
-  this.name = name;
-};
+const createRundownTimerSections = function(increments, parent, color) {
+    const sections = []
+    const incrementHeight = Math.floor(100 / increments);
+    for (let i = 0; i < increments; i ++) {
+        const section = $(`<div class="rundown-timer"></div>`);
+        const height = `${(increments - i) * incrementHeight}%`;
+        sections.push(section);
+    
+        section.css({
+          'width': '100%',
+          'height': height,
+          'position': 'absolute',
+          'bottom': 0,
+          'left': 0,
+          'background-color': color
+        });
+    
+        parent.append(section);
+        // parent = section;
+    }
+    return sections
+}
 
-module.exports = { client, server };
+//   let parent = $(`<div class="input-timer-container"></div>`);
+// const circleInTimerVisual = function(increments, parent, sectionWidth) {
+//     const sections = []
+//     for (let i = 0; i < increments; i ++) {
+//         const section = $(`<div class="timer"></div>`);
+//         const size = (increments - i) * sectionWidth * 2;
+//         sections.push(section);
+    
+//         section.css({
+//           'width': size,
+//           'height': size,
+//           'border-radius': size / 2,
+//         });
+    
+//         parent.append(section);
+//         parent = section;
+//     }
+//     return sections
+// }
 
-},{"./base/client.js":5,"./base/server.js":7}],13:[function(require,module,exports){
+const rundownTimer = function(totalMs, increments, color) {
+    return new timer(totalMs, increments, createRundownTimerSections, color)
+}
+
+module.exports = { timer , rundownTimer };
+
+},{}],12:[function(require,module,exports){
 const ClientSideMinigame = require("./base/client.js");
 const ServerSideMinigame = require("./base/server.js");
 
@@ -629,7 +710,7 @@ const server = function(emit) {
 
 module.exports = { client, server };
 
-},{"./base/client.js":5,"./base/server.js":7}],14:[function(require,module,exports){
+},{"./base/client.js":5,"./base/server.js":6}],13:[function(require,module,exports){
 const ClientSideMinigame = require("./base/client.js");
 const ServerSideMinigame = require("./base/server.js");
 
@@ -653,7 +734,7 @@ const server = function(emit) {
 
 module.exports = { client, server };
 
-},{"./base/client.js":5,"./base/server.js":7}],15:[function(require,module,exports){
+},{"./base/client.js":5,"./base/server.js":6}],14:[function(require,module,exports){
 const ClientSideMinigame = require("./base/client.js");
 const ServerSideMinigame = require("./base/server.js");
 
@@ -720,4 +801,4 @@ const server = function(emit) {
 
 module.exports = { client, server };
 
-},{"./base/client.js":5,"./base/server.js":7}]},{},[4]);
+},{"./base/client.js":5,"./base/server.js":6}]},{},[4]);

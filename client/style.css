@@ -156,22 +156,30 @@
   position: absolute;
   left: 0px;
   background-color: green;
-  width: 33%;
+  width: 40%;
   height: 100%;
 }
 .hive-right {
   position: absolute;
   right: 0px;
   background-color: green;
-  width: 33%;
+  width: 40%;
   height: 100%;
 }
+/* .hive-center {
+  position: absolute;
+  left: 50%;
+  background-color: pink;
+  width: 20%;
+  height: 100%;
+  transform: translate(0px, -50%);
+} */
 .hive-center {
   position: absolute;
   top: 50%;
   left: 50%;
-  background-color: green;
-  width: 34%;
+  background-color: pink;
+  width: 20%;
   height: 100%;
   transform: translate(-50%, -50%);
 }
@@ -180,8 +188,8 @@
   top: 50%;
   left: 50%;
   background-color: blue;
-  width: 80%;
-  height: 80%;
+  width: 90%;
+  height: 90%;
   transform: translate(-50%, -50%);
 }
 .input-timer-container {
