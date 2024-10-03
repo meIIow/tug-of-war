@@ -1,0 +1,108 @@
+.wrapper {
+  height: 100vh;
+  width: 100%;
+  background-color: black;
+}
+
+.prompt-wrap {
+  width: 400px;
+  height: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -70px 0 0 -170px;
+}
+
+.click-pic {
+  background-image: url("https://media.licdn.com/mpr/mpr/shrinknp_200_200/AAEAAQAAAAAAAAyEAAAAJDQ3ODBjYzBkLTU1NTEtNGJkOS05NTE5LWQzOGFiODE5ZDBjOA.jpg");
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  z-index: 800;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: none;
+}
+
+.super-text,
+.prompt {
+  display: block;
+  text-align: center;
+  margin: 0;
+  color: white;
+  font-size: 3em;
+}
+
+.team {
+  display: inline-block;
+  height: 100%;
+  text-align: center;
+  font-size: 70px;
+  color: white;
+  font-weight: 200;
+}
+
+#teamA {
+  float: left;
+  background-color: #2a2740;
+  width: 50%;
+}
+
+#teamB {
+  float: right;
+  background-color: #91cbc0;
+  width: 50%;
+}
+
+.teamID {
+  margin-top: 16px;
+}
+
+#join {
+  clear: both;
+  background-color: #f9d047;
+  display: block;
+  text-align: center;
+  font-size: 70px;
+  color: white;
+  z-index: 999;
+}
+
+.gameboard {
+  width: 80%;
+  height: 70%;
+  position: absolute;
+  top: 150px;
+  left: 10%;
+  background-color: black;
+  display: none;
+  color: white;
+  text-align: center;
+  font-size: 25px;
+}
+
+
+#head {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  top: 300;
+  left: 600;
+  background-color: fuchsia;
+}
+
+.blockA, .blockB {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  font-size: 1em;
+}
+
+.blockA {
+  background-color: #2a2740;
+}
+
+.blockB {
+  background-color: #91cbc0;
+}

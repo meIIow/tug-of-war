@@ -1,0 +1,36 @@
+{
+  "name": "tug-of-war",
+  "version": "2.0.0",
+  "description": "websocket tug of war",
+  "main": "server/index.js",
+  "scripts": {
+    "watch": "watchify -t bulkify client/src/main.js -o client/dist/bundle.js -v",
+    "build": "browserify -t bulkify client/src/main.js -o client/dist/bundle.js",
+    "start-dev": "npm run watch | nodemon server/index.js",
+    "start": "node server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iridium-cs/tug-of-war.git"
+  },
+  "keywords": [
+    "websockets",
+    "socket.io",
+    "realtime",
+    "game"
+  ],
+  "author": "iridium-cs",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iridium-cs/tug-of-war/issues"
+  },
+  "homepage": "https://github.com/iridium-cs/tug-of-war#readme",
+  "dependencies": {
+    "browserify": "^16.2.2",
+    "bulkify": "^1.4.2",
+    "express": "^4.16.2",
+    "nodemon": "^1.14.12",
+    "socket.io": "^2.0.4",
+    "watchify": "^3.11.0"
+  }
+}
