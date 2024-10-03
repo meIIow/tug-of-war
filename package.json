@@ -1,11 +1,13 @@
 {
   "name": "tug-of-war",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "websocket tug of war",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "start"
+    "watch": "watchify -t bulkify client/src/main.js -o client/dist/bundle.js -v",
+    "build": "browserify -t bulkify client/src/main.js -o client/dist/bundle.js",
+    "start-dev": "npm run watch | nodemon server/index.js",
+    "start": "node server/index.js"
   },
   "repository": {
     "type": "git",
@@ -24,8 +26,11 @@
   },
   "homepage": "https://github.com/iridium-cs/tug-of-war#readme",
   "dependencies": {
+    "browserify": "^16.2.2",
+    "bulkify": "^1.4.2",
     "express": "^4.16.2",
     "nodemon": "^1.14.12",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "watchify": "^3.11.0"
   }
 }

@@ -1,0 +1,207 @@
+.wrapper {
+  height: 100vh;
+  width: 100%;
+  background-color: black;
+}
+
+.prompt-wrap {
+  width: 400px;
+  height: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -70px 0 0 -170px;
+}
+
+.click-pic {
+  background-image: url("./img/will-sent.jpg");
+  background-size: contain;
+  background-position: center;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  z-index: 800;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: none;
+}
+
+.super-text,
+.prompt {
+  display: block;
+  text-align: center;
+  margin: 0;
+  color: white;
+  font-size: 3em;
+}
+
+.team {
+  display: inline-block;
+  height: 100%;
+  text-align: center;
+  font-size: 70px;
+  color: white;
+  font-weight: 200;
+}
+
+#teamA {
+  float: left;
+  background-color: #2a2740;
+  width: 50%;
+}
+
+#teamB {
+  float: right;
+  background-color: #91cbc0;
+  width: 50%;
+}
+
+.teamID {
+  margin-top: 16px;
+}
+
+#join {
+  clear: both;
+  background-color: #f9d047;
+  display: block;
+  text-align: center;
+  font-size: 70px;
+  color: white;
+  z-index: 999;
+}
+
+.gameboard {
+  width: 80%;
+  height: 70%;
+  position: absolute;
+  top: 150px;
+  left: 10%;
+  background-color: black;
+  display: none;
+  color: white;
+  text-align: center;
+  font-size: 25px;
+}
+
+/* EatMan */
+#head {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  top: 300;
+  left: 600;
+  background-color: fuchsia;
+}
+.blockA, .blockB {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  font-size: 1em;
+}
+.blockA {
+  background-color: #2a2740;
+}
+.blockB {
+  background-color: #91cbc0;
+}
+
+/* .timer-container {
+  position: relative;
+} */
+
+.timer {
+  background-color: gray;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.arrow-icon {
+  color:white;
+  border-color:white;
+  text-decoration:none;
+  content:'\25B2';
+	border-radius:30px;
+	width:30px;
+	height:30px;
+	border-color:inherit;
+  border-style: solid;
+  background-color: Cyan;
+}
+.arrow-icon-right {
+  transform: rotate(90deg);
+}
+.arrow-icon-left {
+  transform: rotate(270deg);
+}
+.arrow-icon-down {
+  transform: rotate(180deg);
+}
+.arrow-icon:before {
+  content:'\25B2';
+}
+
+/* HiveMind */
+.hive-container {
+  position: absolute;
+  background-color: red;
+  width: 100%;
+  top: 30px;
+  left: 0px;
+  height: calc(100% - 30px);
+}
+.hive-left {
+  position: absolute;
+  left: 0px;
+  background-color: green;
+  width: 33%;
+  height: 100%;
+}
+.hive-right {
+  position: absolute;
+  right: 0px;
+  background-color: green;
+  width: 33%;
+  height: 100%;
+}
+.hive-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: green;
+  width: 34%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+}
+.hive-option {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: blue;
+  width: 80%;
+  height: 80%;
+  transform: translate(-50%, -50%);
+}
+.input-timer-container {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    height: 0;
+    padding-bottom: 100%;
+    background-color: silver;
+    transform: translate(0, -50%);
+
+}
+/* .hive-timer-container {
+  width: 30%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  background-color: yellow;
+  transform: translate(-50%, 0%);
+  visibility: inherit;
+} */
