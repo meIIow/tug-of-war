@@ -27,6 +27,7 @@ const createSession = (id) => {
   const emit = (...args) => io.to(session.id).emit(...args);
   session.gameCycle = minigames.generateGameCycle(emit, session);
   session.gameKickoffCycle = minigames.generateGameKickoffCycle(session.gameCycle);
+  session.gameCleanupCycle = minigames.generateGameCleanupCycle(session.gameCycle);
   return session;
 }
 
@@ -57,6 +58,7 @@ const start = (session) => {
 }
 
 const cycle = (session, cycleCount) => {
+  session.gameCleanupCycle[(cycleCount+session.gameKickoffCycle.length-1) % session.gameKickoffCycle.length]();
   if (session.complete) return;
   session.gameKickoffCycle[cycleCount % session.gameKickoffCycle.length]();
   setTimeout(() => cycle(session, cycleCount + 1), cycleTimer);

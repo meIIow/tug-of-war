@@ -7,13 +7,13 @@ const TeeKey = require("./../minigames/teekey.js");
 const HiveMind = require("./../minigames/hiveMind.js");
 
 const GAME_CYCYLE = [
-  // HiveMind,
-  ClickPic,
-  Dance,
-  EatMan,
-  Spacebar,
-  Typing,
-  TeeKey,
+  HiveMind,
+  // ClickPic,
+  // Dance,
+  // EatMan,
+  // Spacebar,
+  // Typing,
+  // TeeKey,
 ];
 
 /* Binds server side minigame list to a specific game sessions emission func. */
@@ -24,6 +24,11 @@ const generateGameCycle = (emit, session) => {
 /* Convenience function, creates list of start functions to easily call. */
 const generateGameKickoffCycle = (gameCycle) => {
   return gameCycle.map((game) => game.initiate);
+};
+
+/* Convenience function, creates list of cleanup functions to easily call. */
+const generateGameCleanupCycle = (gameCycle) => {
+  return gameCycle.map((game) => game.cleanup);
 };
 
 /* Binds minigame responses to client-side emissions. */
@@ -41,5 +46,6 @@ const bindGameSocketResponses = (gameCycle, socket, session) => {
 module.exports = {
   generateGameCycle,
   generateGameKickoffCycle,
+  generateGameCleanupCycle,
   bindGameSocketResponses,
 };

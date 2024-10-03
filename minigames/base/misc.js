@@ -5,7 +5,7 @@ const timer = function(totalMs, increments) {
   const increment = totalMs / increments;
   const sections = [];
   let lock = 0;
-  let parent = $(`<div class="timer-container"></div>`);
+  let parent = $(`<div class="input-timer-container"></div>`);
   this.root = parent;
 
 
@@ -29,6 +29,8 @@ const timer = function(totalMs, increments) {
     if (this.lock != lock) return;
     const elapsed = new Date().getTime() - startTimeMs;
     sections[i-1].css({ 'background-color': 'transparent' });
+
+    console.log("hello")
 
     if (i >= increments) return;
     const nextInverval =

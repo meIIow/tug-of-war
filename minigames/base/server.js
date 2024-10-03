@@ -8,6 +8,11 @@ const ServerSideMinigame = function(emit) {
     emit(this.name);
   };
 
+  this.cleanup = () => {
+    console.log(
+      `No cleanup actions to take for minigame: ${this.name}`);
+  };
+
   this.enforceInterface = () => {
     if (!this.name) throw Error("Minigame must have name.");
     for (socketResponse in this.socketResponseMap) {

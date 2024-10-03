@@ -191,10 +191,10 @@
     left: 0;
     height: 0;
     padding-bottom: 100%;
-    background-color: silver;
+    background-color: black;
     transform: translate(0, -50%);
-
 }
+
 /* .hive-timer-container {
   width: 30%;
   height: 100%;
