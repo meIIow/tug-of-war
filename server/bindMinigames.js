@@ -7,8 +7,8 @@ const TeeKey = require("./../minigames/teekey.js");
 const HiveMind = require("./../minigames/hiveMind.js");
 
 const GAME_CYCYLE = [
-  HiveMind,
   ClickPic,
+  HiveMind,
   Dance,
   EatMan,
   Spacebar,

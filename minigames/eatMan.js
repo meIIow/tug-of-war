@@ -16,17 +16,17 @@ const client = function(session, emit, tug) {
   const targetPositions = {
     A: [
       {top: 50, left: 450},
-      {top: 150, left: 950},
+      {top: 150, left: 650},
       {top: 250, left: 750},
       {top: 350, left: 150},
-      {top: 450, left: 1150}
+      {top: 100, left: 50}
     ],
     B: [
       {top: 50, left: 150},
       {top: 150, left: 550},
-      {top: 250, left: 1050},
-      {top: 350, left: 850},
-      {top: 450, left: 250}
+      {top: 250, left: 650},
+      {top: 350, left: 100},
+      {top: 400, left: 250}
     ]
   };
 
