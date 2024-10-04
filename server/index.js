@@ -32,9 +32,10 @@ const createSession = (id) => {
 }
 
 // Game Data
-const secs = 3; // 10; // countdown in secs
+const secs = 10; // countdown in secs
 const cycleTimer = 15000;
 const winMargin = 100;
+const maxCycles = 50; // session will end with tie after 100 cycles
 const teams = ["teamA", "teamB"];
 let gamesPlayed = 0;
 let nextGame = createSession(gamesPlayed);
@@ -59,6 +60,10 @@ const start = (session) => {
 
 const cycle = (session, cycleCount) => {
   session.gameCleanupCycle[(cycleCount+session.gameKickoffCycle.length-1) % session.gameKickoffCycle.length]();
+  if (cycleCount > maxCycles) {
+    session.complete = true;
+    return io.to(session.id).emit("win", 'Session Timed Out - No one');
+  }
   if (session.complete) return;
   session.gameKickoffCycle[cycleCount % session.gameKickoffCycle.length]();
   setTimeout(() => cycle(session, cycleCount + 1), cycleTimer);
