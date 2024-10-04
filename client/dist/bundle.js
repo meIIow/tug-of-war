@@ -463,23 +463,25 @@ const timer =  require("./misc/timer.js").rundownTimer;
  * Those who are in the majority get a point! Then the game repeats.
  * 
  * Server .. starts timeout for total time for client to everything (show results, accept choice, and send over)
- * Server -> hiveMind, lock img-l (left choice), img-r (right choice), prev-majority (0 first time / on tie, then + or - num)
- * Client .. some time to post results of last round, highlights in winner/loser color and (on win) tugs
+ * Server -> hiveMind, lock img-l (left choice), img-r (right choice)
  * Client .. Resets game, using new left and right choice imgs, new timer
  * Client .. Waits until response timer hits 0, tracks current choice
  * Client -> hiveMind, lock, choice (0 for no choice, -1 or 1 for left/right)
  * Server .. recieves choices, calculates majority
+ * Server -> hiveMindResult, lock, vote difference
+ * Client .. some time to post results of last round, highlights in winner/loser color and (on win) tugs
  * [REPEAT]
  */
 const name = "hiveMind";
 const HIVE_CHOICE_TAG = "hiveChoice"
+const HIVE_RESULT_TAG = "hiveResult"
 const IMG_COUNT = 10
 const RESULT_TIMEOUT_MS = 1000;
 const RESPONSE_TIMEOUT_MS = 2000;
 const PROCESSING_TIMEOUT_MS = 500;
 const CYCLE_TIME_MS = RESULT_TIMEOUT_MS + RESPONSE_TIMEOUT_MS + PROCESSING_TIMEOUT_MS;
 
-const ACTIVE_COLOR = 'purple'
+const ACTIVE_COLOR = 'magenta'
 
 // Generate array that contains all rorschach blob relative paths
 const array_01_to_10 = Array.from(
@@ -493,30 +495,80 @@ const client = function(session, emit, tug) {
 
   this.name = name;
   this.instructions = "Tap into the Hivemind. Left - or Right?";
-  this.timer = new timer(RESPONSE_TIMEOUT_MS, 16, ACTIVE_COLOR);
+  this.state = {};
+  this.lock = -1
   this.choice = 0;
-  this.locked_choice = 0;
 
-  this.begin = (lock, leftImageId, rightImageId, result) => {
+  this.begin = (lock, leftImageId, rightImageId) => {
+    console.log(this)
+    console.log('state is this', this.state);
+    this.lock = lock;
+
     const container = this.generateGameBoard();
-    this.timer.appendTo(container.children('.hive-center').first())
+    this.state[lock] = this.generateState(container);
+    this.state[lock].timer.appendTo(container.children('.hive-center').first())
 
-    this.choice = 0;
-    this.timer.countdown(this.timer.lock, new Date().getTime(), 1);
     console.log(`Starting minigame: ${this.name}`)
-    this.showResults(lock, leftImageId, rightImageId, result);
+    this.startResponsePhase(lock, leftImageId, rightImageId);
   }
 
   this.inputEventResponseMap.keyup = (event) => {
-    if (event.keyCode === 37) this.choice = -1;
-    if (event.keyCode === 39) this.choice = 1;
+    if (event.keyCode === 37) {
+      console.log('recieved left input');
+      left = session.$gameboard.find('.hive-left', 'hive-chooseable');
+      right = session.$gameboard.find('.hive-right', 'hive-chooseable');
+      if (left.length) left.first().css('background-color', ACTIVE_COLOR);
+      if (right.length) right.first().css('background-color', 'darkgray');
+      this.choice = -1;
+    }
+    if (event.keyCode === 39) {
+      console.log('recieved right input');
+      left = session.$gameboard.find('.hive-left', 'hive-chooseable');
+      right = session.$gameboard.find('.hive-right', 'hive-chooseable');
+      if (left.length) left.first().css('background-color', 'darkgray');
+      if (right.length) right.first().css('background-color', ACTIVE_COLOR);
+      this.choice = 1;
+    }
   };
+
+  this.socketResponseMap[HIVE_RESULT_TAG] = (lock, result) => {
+    inMajority = result * this.state[lock].locked_choice > 0;
+    console.log(`Was in Hivemind majority? ${inMajority}`)
+
+    // Choose option border highlight colors based on result
+    leftHighlight = 'slategray';
+    rightHighlight = 'slategray';
+    if (result < 0) {
+      leftHighlight = inMajority ? 'greenyellow' : 'maroon';
+    } else if (result > 0) {
+      rightHighlight = inMajority ? 'greenyellow' : 'maroon';
+    }
+
+    this.state[lock].left.css("background-color", leftHighlight)
+    this.state[lock].right.css("background-color", rightHighlight)
+
+    if (inMajority) tug();
+  }
+
+  this.generateState = (container) => {
+    return {
+      choice: 0,
+      choice_lock: 0,
+      timer: new timer(RESPONSE_TIMEOUT_MS, 16, ACTIVE_COLOR),
+      left: container.find(".hive-left"),
+      right: container.find(".hive-right"),
+    };
+  }
+
+  this.generateResultBorderHighlights = (result, choice) => {
+    return [leftHighlight, rightHighlight];
+  }
 
   this.generateGameBoard = () => {
     const container = $(`<div class="hive-container"></div>`);
 
-    const left = $(`<div class="hive-left"></div>`);
-    const right = $(`<div class="hive-right"></div>`);
+    const left = $(`<div class="hive-left hive-choosable"></div>`);
+    const right = $(`<div class="hive-right hive-choosable"></div>`);
     const center = $(`<div class="hive-center"></div>`);
     container.append(left);
     container.append(right);
@@ -531,25 +583,25 @@ const client = function(session, emit, tug) {
     return container;
   }
 
-  this.showResults = (lock, leftImageId, rightImageId, result) => {
-    inMajority = result * this.locked_choice > 0;
-    console.log(`Was in majority? ${inMajority}`)
-    // TODO: locked choice becomes color based on majority or not
-    if (inMajority) tug();
-
-    setTimeout(() => this.startResponsePhase(lock, leftImageId, rightImageId), RESULT_TIMEOUT_MS);
-  }
-
   this.startResponsePhase = (lock, leftImageId, rightImageId) =>  {
-    // TODO: start timer
-    setTimeout(() => this.sendResponse(lock), RESPONSE_TIMEOUT_MS);
+    if (lock < this.lock) return
+    this.choice = 0;
+    this.state[lock].timer.reset();
+    // Set lef/right image
+    // Set left/right to have class that cares about current choice, not locked choice
+    this.state[lock].timer.countdown(
+      this.state[lock].timer.lock, new Date().getTime(), 1, () => this.sendResponse(lock));
   }
 
   this.sendResponse = (lock) =>  {
-    this.locked_choice = this.choice;
-    console.log(this.locked_choice, this.choice, lock)
-    // TODO: Fade everything else
-    emit(HIVE_CHOICE_TAG, lock, this.locked_choice);
+    if (lock < this.lock) return;
+    this.state[lock].left.removeClass('hive-choosable');
+    this.state[lock].right.removeClass('hive-choosable');
+    this.state[lock].locked_choice = this.choice;
+    // 
+    console.log(`Choice for hivemand round ${lock}: ${this.state[lock].locked_choice}`);
+    // TODO: Fade everything else?
+    emit(HIVE_CHOICE_TAG, lock, this.state[lock].locked_choice);
   }
 }
 
@@ -567,7 +619,7 @@ const server = function(emit) {
   this.initiate = () => {
     this.reset();
     this.lock++;
-    this.cycleHivemind(this.lock);
+    this.cycleHivemindSetup(this.lock);
   }
 
   this.reset = () => {
@@ -583,15 +635,22 @@ const server = function(emit) {
     return [leftImageId, rightImageId]
   }
 
-  this.cycleHivemind = (lock) => {
+  this.cycleHivemindSetup = (lock) => {
     console.log(lock, this.lock)
     if (lock < this.lock) return;
-    console.log(`Another round of minigame: ${this.name}`)
+    console.log(`Kicking off round of minigame: ${this.name}`)
     const [leftImageId, rightImageId] = this.chooseImageIds();
-    console.log(`Emitting: minigame ${this.name} with images ${leftImageId} & ${rightImageId} and previous vote diff ${this.voteDifference}`)
-    emit(this.name, lock, leftImageId, rightImageId, this.voteDifference);
+    console.log(`Emitting: minigame ${this.name} with images ${leftImageId} & ${rightImageId}`)
     this.reset();
-    setTimeout(() => this.cycleHivemind(lock), CYCLE_TIME_MS);
+    emit(this.name, lock, leftImageId, rightImageId);
+    setTimeout(() => this.cycleHivemindResult(lock), RESPONSE_TIMEOUT_MS + PROCESSING_TIMEOUT_MS);
+  }
+
+  this.cycleHivemindResult = (lock) => {
+    if (lock < this.lock) return;
+    console.log(`Emitting results of minigame: ${this.name} had vote difference ${this.voteDifference}`)
+    emit(HIVE_RESULT_TAG, lock, this.voteDifference);
+    setTimeout(() => this.cycleHivemindSetup(lock), RESULT_TIMEOUT_MS);
   }
 
   this.socketResponseMap[HIVE_CHOICE_TAG] = (lock, direction) => {
@@ -611,17 +670,17 @@ const timer = function(totalMs, increments, sectionGenerator, color) {
 
   const sections = sectionGenerator(increments, parent, color);
 
-  this.countdown = (lock, startTimeMs, i) => {
+  this.countdown = (lock, startTimeMs, i, timeoutCallback) => {
     if (this.lock != lock) return;
     const elapsed = new Date().getTime() - startTimeMs;
     sections[i-1].css({ 'background-color': 'transparent' });
 
     console.log("hello")
 
-    if (i >= increments) return;
+    if (i >= increments) return timeoutCallback();
     const nextInverval =
       startTimeMs + ((i + 1) * increment) - new Date().getTime();
-    setTimeout(() => this.countdown(lock, startTimeMs, i + 1), nextInverval);
+    setTimeout(() => this.countdown(lock, startTimeMs, i + 1, timeoutCallback), nextInverval);
   }
 
   this.reset = () => {

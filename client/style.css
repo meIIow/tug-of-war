@@ -155,14 +155,14 @@
 .hive-left {
   position: absolute;
   left: 0px;
-  background-color: green;
+  background-color: darkgray;
   width: 40%;
   height: 100%;
 }
 .hive-right {
   position: absolute;
   right: 0px;
-  background-color: green;
+  background-color: darkgray;
   width: 40%;
   height: 100%;
 }

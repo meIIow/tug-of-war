@@ -7,17 +7,17 @@ const timer = function(totalMs, increments, sectionGenerator, color) {
 
   const sections = sectionGenerator(increments, parent, color);
 
-  this.countdown = (lock, startTimeMs, i) => {
+  this.countdown = (lock, startTimeMs, i, timeoutCallback) => {
     if (this.lock != lock) return;
     const elapsed = new Date().getTime() - startTimeMs;
     sections[i-1].css({ 'background-color': 'transparent' });
 
     console.log("hello")
 
-    if (i >= increments) return;
+    if (i >= increments) return timeoutCallback();
     const nextInverval =
       startTimeMs + ((i + 1) * increment) - new Date().getTime();
-    setTimeout(() => this.countdown(lock, startTimeMs, i + 1), nextInverval);
+    setTimeout(() => this.countdown(lock, startTimeMs, i + 1, timeoutCallback), nextInverval);
   }
 
   this.reset = () => {
