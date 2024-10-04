@@ -60,7 +60,10 @@ const start = (session) => {
 
 const cycle = (session, cycleCount) => {
   session.gameCleanupCycle[(cycleCount+session.gameKickoffCycle.length-1) % session.gameKickoffCycle.length]();
-  if (cycleCount > maxCycles) return io.to(session.id).emit("win", 'Session Timed Out - No one');
+  if (cycleCount > maxCycles) {
+    session.complete = true;
+    return io.to(session.id).emit("win", 'Session Timed Out - No one');
+  }
   if (session.complete) return;
   session.gameKickoffCycle[cycleCount % session.gameKickoffCycle.length]();
   setTimeout(() => cycle(session, cycleCount + 1), cycleTimer);
