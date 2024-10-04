@@ -35,7 +35,7 @@ const timer = function(totalMs, increments, sectionGenerator, color) {
 
 const createRundownTimerSections = function(increments, parent, color) {
     const sections = []
-    const incrementHeight = Math.floor(100 / increments);
+    const incrementHeight = 100 / increments;
     for (let i = 0; i < increments; i ++) {
         const section = $(`<div class="rundown-timer"></div>`);
         const height = `${(increments - i) * incrementHeight}%`;

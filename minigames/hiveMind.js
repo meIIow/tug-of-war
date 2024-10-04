@@ -25,14 +25,14 @@ const RESPONSE_TIMEOUT_MS = 2000;
 const PROCESSING_TIMEOUT_MS = 500;
 const CYCLE_TIME_MS = RESULT_TIMEOUT_MS + RESPONSE_TIMEOUT_MS + PROCESSING_TIMEOUT_MS;
 
-const ACTIVE_COLOR = 'magenta'
+const ACTIVE_COLOR = 'cyan'
 
 // Generate array that contains all rorschach blob relative paths
 const array_01_to_10 = Array.from(
   {length:IMG_COUNT},
   (v,k)=>(k+1).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false})
 );
-const backgroundOptionUrls = array_01_to_10.map((i) => `../client/img/Rorschach_blot_${i}.jpg`);
+const backgroundOptionUrls = array_01_to_10.map((i) => `./img/Rorschach_blot_${i}.jpg`);
 
 const client = function(session, emit, tug) {
   ClientSideMinigame.call(this);
@@ -44,31 +44,29 @@ const client = function(session, emit, tug) {
   this.choice = 0;
 
   this.begin = (lock, leftImageId, rightImageId) => {
-    console.log(this)
-    console.log('state is this', this.state);
     this.lock = lock;
 
-    const container = this.generateGameBoard();
+    const container = this.generateGameBoard(leftImageId, rightImageId);
     this.state[lock] = this.generateState(container);
     this.state[lock].timer.appendTo(container.children('.hive-center').first())
 
     console.log(`Starting minigame: ${this.name}`)
-    this.startResponsePhase(lock, leftImageId, rightImageId);
+    this.startResponsePhase(lock);
   }
 
   this.inputEventResponseMap.keyup = (event) => {
     if (event.keyCode === 37) {
       console.log('recieved left input');
-      left = session.$gameboard.find('.hive-left', 'hive-chooseable');
-      right = session.$gameboard.find('.hive-right', 'hive-chooseable');
+      left = session.$gameboard.find('.hive-left.hive-chooseable');
+      right = session.$gameboard.find('.hive-right.hive-chooseable');
       if (left.length) left.first().css('background-color', ACTIVE_COLOR);
       if (right.length) right.first().css('background-color', 'darkgray');
       this.choice = -1;
     }
     if (event.keyCode === 39) {
       console.log('recieved right input');
-      left = session.$gameboard.find('.hive-left', 'hive-chooseable');
-      right = session.$gameboard.find('.hive-right', 'hive-chooseable');
+      left = session.$gameboard.find('.hive-left.hive-chooseable');
+      right = session.$gameboard.find('.hive-right.hive-chooseable');
       if (left.length) left.first().css('background-color', 'darkgray');
       if (right.length) right.first().css('background-color', ACTIVE_COLOR);
       this.choice = 1;
@@ -88,6 +86,12 @@ const client = function(session, emit, tug) {
       rightHighlight = inMajority ? 'greenyellow' : 'maroon';
     }
 
+    let resultText = inMajority ? 'Success!' : 'Failure.';
+    resultText = !result ? 'Deadlock...' : resultText;
+    const resultBox = $(`<div class="hive-result"></div>`);
+    resultBox.html(`<span class="text-overflow-center">${resultText}</span>`);
+    this.state[lock].container.append(resultBox);
+
     this.state[lock].left.css("background-color", leftHighlight)
     this.state[lock].right.css("background-color", rightHighlight)
 
@@ -98,7 +102,8 @@ const client = function(session, emit, tug) {
     return {
       choice: 0,
       choice_lock: 0,
-      timer: new timer(RESPONSE_TIMEOUT_MS, 16, ACTIVE_COLOR),
+      timer: new timer(RESPONSE_TIMEOUT_MS, 32, ACTIVE_COLOR),
+      container: container,
       left: container.find(".hive-left"),
       right: container.find(".hive-right"),
     };
@@ -108,11 +113,11 @@ const client = function(session, emit, tug) {
     return [leftHighlight, rightHighlight];
   }
 
-  this.generateGameBoard = () => {
+  this.generateGameBoard = (leftImageId, rightImageId) => {
     const container = $(`<div class="hive-container"></div>`);
 
-    const left = $(`<div class="hive-left hive-choosable"></div>`);
-    const right = $(`<div class="hive-right hive-choosable"></div>`);
+    const left = $(`<div class="hive-left hive-chooseable"></div>`);
+    const right = $(`<div class="hive-right hive-chooseable"></div>`);
     const center = $(`<div class="hive-center"></div>`);
     container.append(left);
     container.append(right);
@@ -120,6 +125,8 @@ const client = function(session, emit, tug) {
 
     const leftOption = $(`<div class="hive-option"></div>`);
     const rightOption = $(`<div class="hive-option"></div>`);
+    leftOption.css('background-image', `url(${backgroundOptionUrls[leftImageId]})`);
+    rightOption.css('background-image', `url(${backgroundOptionUrls[rightImageId]})`);
     left.append(leftOption);
     right.append(rightOption);
 
@@ -131,20 +138,16 @@ const client = function(session, emit, tug) {
     if (lock < this.lock) return
     this.choice = 0;
     this.state[lock].timer.reset();
-    // Set lef/right image
-    // Set left/right to have class that cares about current choice, not locked choice
     this.state[lock].timer.countdown(
       this.state[lock].timer.lock, new Date().getTime(), 1, () => this.sendResponse(lock));
   }
 
   this.sendResponse = (lock) =>  {
     if (lock < this.lock) return;
-    this.state[lock].left.removeClass('hive-choosable');
-    this.state[lock].right.removeClass('hive-choosable');
+    this.state[lock].left.removeClass('hive-chooseable');
+    this.state[lock].right.removeClass('hive-chooseable');
     this.state[lock].locked_choice = this.choice;
-    // 
     console.log(`Choice for hivemand round ${lock}: ${this.state[lock].locked_choice}`);
-    // TODO: Fade everything else?
     emit(HIVE_CHOICE_TAG, lock, this.state[lock].locked_choice);
   }
 }

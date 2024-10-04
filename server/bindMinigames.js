@@ -8,11 +8,11 @@ const HiveMind = require("./../minigames/hiveMind.js");
 
 const GAME_CYCYLE = [
   HiveMind,
-  // ClickPic,
-  // Dance,
-  // EatMan,
-  // Spacebar,
-  // Typing,
+  ClickPic,
+  Dance,
+  EatMan,
+  Spacebar,
+  Typing,
   // TeeKey,
 ];
 

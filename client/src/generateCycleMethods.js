@@ -73,7 +73,7 @@ const generateCycleMethods = (socket, session, minigames) => {
     session.$promptWrap.show();
     session.$promptSuper.text(winner + " won!");
     session.$prompt.text("Play again!");
-    session.$promptWrap.fadeOut(2000);
+    session.$promptWrap.fadeOut(5000);
     session.$gameboard.hide();
   });
 
